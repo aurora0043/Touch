@@ -36,6 +36,13 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.example.touch.ui.theme.ColorBlue
+import com.example.touch.ui.theme.ColorGreen
+import com.example.touch.ui.theme.ColorIndigo
+import com.example.touch.ui.theme.ColorOrange
+import com.example.touch.ui.theme.ColorPurple
+import com.example.touch.ui.theme.ColorRed
+import com.example.touch.ui.theme.ColorYellow
 import com.example.touch.ui.theme.TouchTheme
 
 class MainActivity : ComponentActivity() {
@@ -88,10 +95,16 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun DrawCircle() {
     var X = remember { mutableStateListOf(0f) }
-    var Y = remember { mutableStateListOf(0f) }
+    val Y = remember { mutableStateListOf(0f) }
     var Fingers by remember { mutableStateOf(0) }
     val handImage = ImageBitmap.imageResource(R.drawable.hand)
-    Box(
+
+    var PaintColor:Color
+    var colors = arrayListOf(
+        ColorRed, ColorOrange, ColorYellow, ColorGreen,
+        ColorBlue, ColorIndigo, ColorPurple)
+
+                Box(
         modifier = Modifier.fillMaxSize()
             .pointerInteropFilter { event ->
                 Fingers = event.getPointerCount()
@@ -107,8 +120,10 @@ fun DrawCircle() {
     ){
         Canvas(modifier = Modifier){
             for (i in 0..Fingers - 1) {
-                drawCircle(Color.Yellow, 100f, Offset(X[i], Y[i]))
+                PaintColor = colors[i % 7]
+                drawCircle(PaintColor, 100f, Offset(X[i], Y[i]))
             }
+
         }
     }
 }
