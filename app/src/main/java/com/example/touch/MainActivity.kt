@@ -1,6 +1,7 @@
 package com.example.touch
 
 import android.os.Bundle
+import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -29,6 +30,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
@@ -57,6 +61,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     )
                     DrawCircle()
+                    DrawPath()
                 }
             }
         }
@@ -128,11 +133,71 @@ fun DrawCircle() {
     }
 }
 
+/*@Composable
+fun DrawPath() {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ){
+        Canvas(modifier = Modifier){
+            val p = Path()
+            p.moveTo(500f, 300f)
+            p.lineTo(300f,600f)
+            drawPath(p, color = Color.Black,
+                style = Stroke(width = 30f, join = StrokeJoin.Round)
+            )
+        }
+    }
+}*/
 
-@Preview(showBackground = true)
+data class Points(
+    val x: Float,
+    val y: Float
+)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun GreetingPreview() {
-    TouchTheme {
-        Greeting("Android")
+fun DrawPath() {
+    val paths = remember { mutableStateListOf<Points>() }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInteropFilter { event ->
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        paths.clear()
+                        true
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        paths += Points(event.x, event.y)
+                        true
+                    }
+                    else -> false
+                }
+            }
+    )
+    {
+        Canvas(modifier = Modifier){
+            val p = Path()
+            //p.moveTo(500f, 300f)
+            //p.lineTo(300f,600f)
+            var j = 0
+            for (path in paths) {
+                if (j==0){  //第一筆不畫
+                    p.moveTo(path.x, path.y)
+                }
+                else{
+                    p.lineTo(path.x, path.y)
+                }
+                j++
+            }
+
+            drawPath(p, color = Color.Black,
+                style = Stroke(width = 30f, join = StrokeJoin.Round)
+            )
+        }
     }
 }
+
+
+
+
+
