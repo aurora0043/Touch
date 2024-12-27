@@ -10,7 +10,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import com.example.touch.ui.theme.TouchTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,15 +32,16 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
+} //
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+    Text(text = "多指觸控Compose實例",
+        fontFamily = FontFamily(Font(R.font.finger)),
+        fontSize = 25.sp,
+        color = Color.Blue)
 }
+
 
 @Preview(showBackground = true)
 @Composable
