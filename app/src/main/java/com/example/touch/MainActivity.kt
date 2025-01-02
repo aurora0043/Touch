@@ -60,8 +60,7 @@ class MainActivity : ComponentActivity() {
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
-                    DrawCircle()
-                    //DrawPath()
+                    CombinedDraw()
                 }
             }
         }
@@ -98,64 +97,22 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun DrawCircle() {
-    var X = remember { mutableStateListOf(0f) }
+fun CombinedDraw() {
+
+    data class Points(
+        val x: Float,
+        val y: Float
+    )
+
+    val paths = remember { mutableStateListOf<Points>() }
+    val X = remember { mutableStateListOf(0f) }
     val Y = remember { mutableStateListOf(0f) }
     var Fingers by remember { mutableStateOf(0) }
-    val handImage = ImageBitmap.imageResource(R.drawable.hand)
-
-    var PaintColor:Color
-    var colors = arrayListOf(
+    val colors = arrayListOf(
         ColorRed, ColorOrange, ColorYellow, ColorGreen,
-        ColorBlue, ColorIndigo, ColorPurple)
+        ColorBlue, ColorIndigo, ColorPurple
+    )
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-            .pointerInteropFilter { event ->
-                Fingers = event.getPointerCount()
-                X.clear()
-                Y.clear()
-                for (i in 0..Fingers - 1) {
-                    X.add( event.getX(i))
-                    Y.add (event.getY(i))
-                }
-                true
-            }
-    ){
-        Canvas(modifier = Modifier){
-            for (i in 0..Fingers - 1) {
-                PaintColor = colors[i % 7]
-                drawCircle(PaintColor, 100f, Offset(X[i], Y[i]))
-            }
-
-        }
-    }
-}
-
-/*@Composable
-fun DrawPath() {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ){
-        Canvas(modifier = Modifier){
-            val p = Path()
-            p.moveTo(500f, 300f)
-            p.lineTo(300f,600f)
-            drawPath(p, color = Color.Black,
-                style = Stroke(width = 30f, join = StrokeJoin.Round)
-            )
-        }
-    }
-}*/
-
-data class Points(
-    val x: Float,
-    val y: Float
-)
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun DrawPath() {
-    val paths = remember { mutableStateListOf<Points>() }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -169,34 +126,44 @@ fun DrawPath() {
                         paths += Points(event.x, event.y)
                         true
                     }
-                    else -> false
+                    else -> {
+                        Fingers = event.pointerCount
+                        X.clear()
+                        Y.clear()
+                        for (i in 0 until Fingers) {
+                            X.add(event.getX(i))
+                            Y.add(event.getY(i))
+                        }
+                        true
+                    }
                 }
             }
-    )
-    {
-        Canvas(modifier = Modifier){
-            val p = Path()
-            //p.moveTo(500f, 300f)
-            //p.lineTo(300f,600f)
-            var j = 0
-            for (path in paths) {
-                if (j==0){  //第一筆不畫
-                    p.moveTo(path.x, path.y)
-                }
-                else{
-                    p.lineTo(path.x, path.y)
-                }
-                j++
+    ) {
+        // Draw Circles
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            for (i in 0 until Fingers) {
+                val paintColor = colors[i % 7]
+                drawCircle(paintColor, 100f, Offset(X[i], Y[i]))
             }
+        }
 
-            drawPath(p, color = Color.Black,
+        // Draw Path
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val path = Path()
+            var isFirstPoint = true
+            for (point in paths) {
+                if (isFirstPoint) {
+                    path.moveTo(point.x, point.y)
+                    isFirstPoint = false
+                } else {
+                    path.lineTo(point.x, point.y)
+                }
+            }
+            drawPath(
+                path,
+                color = Color.Black,
                 style = Stroke(width = 30f, join = StrokeJoin.Round)
             )
         }
     }
 }
-
-
-
-
-
