@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     )
                     DrawCircle()
-                    DrawPath()
+                    //DrawPath()
                 }
             }
         }
@@ -109,7 +109,7 @@ fun DrawCircle() {
         ColorRed, ColorOrange, ColorYellow, ColorGreen,
         ColorBlue, ColorIndigo, ColorPurple)
 
-                Box(
+    Box(
         modifier = Modifier.fillMaxSize()
             .pointerInteropFilter { event ->
                 Fingers = event.getPointerCount()
@@ -121,7 +121,6 @@ fun DrawCircle() {
                 }
                 true
             }
-
     ){
         Canvas(modifier = Modifier){
             for (i in 0..Fingers - 1) {
